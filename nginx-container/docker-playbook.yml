@@ -1,0 +1,28 @@
+---
+- name: To create an nginx container.
+  hosts: localhost
+  tasks:
+  - name: Build an image
+    docker_image:
+      path: /root/containers
+      state: build
+      name: nginx
+      tag: v2
+    register: result
+    until: result is success
+    retries: 5
+    delay: 10
+  
+  - name: Run a container
+    docker_container:
+      name: nginx-with-ansible
+      image: nginx:v2
+      state: started
+      restart: yes
+      ports:
+      - "80:80"
+    register: run
+    until: run is success
+    retries: 5
+    delay: 10
+        
